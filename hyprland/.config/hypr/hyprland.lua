@@ -361,7 +361,7 @@ hl.window_rule({
 
 --- Keybindings
 -- lock
-hl.bind(mainMod .. " + J", hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))
 
 --- Windowrules
 -- Mark XWayland windows
@@ -372,28 +372,20 @@ hl.window_rule({
 
 -- Workspace 2: Browser (Firefox)
 hl.window_rule({
-    match = { class = "^firefox$" },
-    workspace = "2",
+    match		= { class = "^firefox$" },
+    workspace	= "2",
+    fullscreen	= true,
+    maximize	= true,
     no_initial_focus = true,
-    fullscreen = true,
-    maximize = true,
     fullscreen_state = "3 0"
-    -- float = true
-})
-
--- Workspace 2: GNOME Secrets
-hl.window_rule({
-    match = { class = "org.gnome.World.Secrets" }
-    -- workspace = "2",
-    -- float = true
 })
 
 -- Workspace 3: darktable
 hl.window_rule({
-    match = { class = "^darktable$" },
-    workspace = "3",
-    fullscreen = true,
-    maximize = true,
+    match		= { class = "^darktable$" },
+    workspace	= "3",
+    fullscreen	= true,
+    maximize	= true,
     fullscreen_state = "3 0"
 })
 
@@ -405,11 +397,23 @@ hl.window_rule {
 	size	= {"(monitor_w*0.25)", "(monitor_h*0.75)"}
 }
 
+hl.window_rule({
+    match		= { class = "org.gnome.World.Secrets" },
+    workspace	= "special:magic",
+	float		= true,
+	size		= {"(monitor_w*0.5)", "(monitor_h*0.75)"},
+    no_initial_focus = true,
+    fullscreen_state = "3 0"
+})
+
+
 -- Autostart and Silent Workspace Assignments
 hl.on("hyprland.start", function()
     -- Core Utilities
     hl.exec_cmd("systemctl --user start hyprpolkitagent")
     hl.exec_cmd("hypridle")
+	hl.exec_cmd("wl-paste --type text --watch cliphist store")
+	hl.exec_cmd("wl-paste --watch wl-copy --primary")
 
     -- hl.exec_cmd("waybar")
     hl.exec_cmd("nwg-panel")
@@ -420,6 +424,9 @@ hl.on("hyprland.start", function()
 
     -- Workspace 2: Launch Firefox into background
     hl.exec_cmd("/usr/local/bin/firefox --profile ~/.cache/mozilla/firefox/default/", { workspace = "2" })
+
+	-- Special
+    hl.exec_cmd("secrets", { workspace = "special:magic silent" })
 
     -- Health Break Management (Agnostic tools)
     hl.exec_cmd("xwrits typetime=21 breaktime=5 canceltime=:10 +beep +breakclock +mouse=2 -idle -cheat +clock +noiconify -quota +top after=:10") -- +multiply
